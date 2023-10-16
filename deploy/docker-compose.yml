@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: bus_boarding_api:${BUS_BOARDING_API_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      BUS_BOARDING_API_HOST: 0.0.0.0
+      BUS_BOARDING_API_DB_HOST: bus_boarding_api-db
+      BUS_BOARDING_API_DB_PORT: 3306
+      BUS_BOARDING_API_DB_USER: bus_boarding_api
+      BUS_BOARDING_API_DB_PASS: bus_boarding_api
+      BUS_BOARDING_API_DB_BASE: bus_boarding_api
+      BUS_BOARDING_API_REDIS_HOST: bus_boarding_api-redis
+
+  db:
+    image: bitnami/mysql:8.0.30
+    hostname: bus_boarding_api-db
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: "bus_boarding_api"
+      MYSQL_ROOT_PASSWORD: "bus_boarding_api"
+      MYSQL_DATABASE: "bus_boarding_api"
+      MYSQL_AUTHENTICATION_PLUGIN: "mysql_native_password"
+    healthcheck:
+      test: mysqladmin ping -h localhost
+      interval: 10s
+      timeout: 5s
+      retries: 40
+    volumes:
+    - bus_boarding_api-db-data:/bitnami/mysql/data
+
+  migrator:
+    image: bus_boarding_api:${BUS_BOARDING_API_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      BUS_BOARDING_API_DB_HOST: bus_boarding_api-db
+      BUS_BOARDING_API_DB_PORT: 3306
+      BUS_BOARDING_API_DB_USER: bus_boarding_api
+      BUS_BOARDING_API_DB_PASS: bus_boarding_api
+      BUS_BOARDING_API_DB_BASE: bus_boarding_api
+    depends_on:
+      db:
+        condition: service_healthy
+
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: "bus_boarding_api-redis"
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
+
+
+
+volumes:
+  bus_boarding_api-db-data:
+    name: bus_boarding_api-db-data
