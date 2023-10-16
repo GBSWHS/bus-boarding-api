@@ -32,7 +32,7 @@ services:
       MYSQL_ROOT_USER: "bus_boarding_api"
       MYSQL_ROOT_PASSWORD: "bus_boarding_api"
       MYSQL_DATABASE: "bus_boarding_api"
-      MYSQL_AUTHENTICATION_PLUGIN: "mysql_native_password"
+      MYSQL_AUTHENTICATION_PLUGIN: "caching_sha2_password"
     healthcheck:
       test: mysqladmin ping -h localhost
       interval: 10s
