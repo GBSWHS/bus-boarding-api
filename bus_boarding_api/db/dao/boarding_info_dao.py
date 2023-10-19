@@ -13,6 +13,7 @@ class BoardingInfoDAO:
     def __init__(self, session: AsyncSession = Depends(get_db_session)):
         self.session = session
 
+# TODO create when creating user
     async def create(self, user_id: int, bus_id: int, destination_stop_id: int) -> None:
         user_result = await self.session.execute(select(UserModel.id).where(UserModel.id == user_id))
         if not user_result.scalar_one_or_none():
@@ -29,6 +30,26 @@ class BoardingInfoDAO:
         self.session.add(BoardingInfoModel(user_id=user_id,
                                            boarding_bus_id=bus_id,
                                            destination_stop_id=destination_stop_id))
+
+
+# TODO should update update
+    async def update_bus(self, boarding_info_id: int, bus_id: int) -> None:
+        bus_result = await self.session.execute(select(BusModel.id).where(BusModel.id == bus_id))
+        if not bus_result.scalar_one_or_none():
+            raise ValueError(f"Bus with ID {bus_id} does not exist.")
+
+        boarding_info = await self.session.get(BoardingInfoModel, boarding_info_id)
+        if boarding_info:
+            boarding_info.boarding_bus_id = bus_id
+
+    async def update_stop(self, boarding_info_id: int, destination_stop_id: int) -> None:
+        stop_result = await self.session.execute(select(BusStopModel.id).where(BusStopModel.id == destination_stop_id))
+        if not stop_result.scalar_one_or_none():
+            raise ValueError(f"Stop with ID {destination_stop_id} does not exist.")
+
+        boarding_info = await self.session.get(BoardingInfoModel, boarding_info_id)
+        if boarding_info:
+            boarding_info.destination_stop_id = destination_stop_id
 
     async def get_by_user(self, user_id: int):
         stmt = (

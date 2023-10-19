@@ -27,7 +27,7 @@ class BoardingRecordDAO:
             raise ValueError(f"Stop with ID {destination_stop_id} does not exist.")
 
         self.session.add(BoardingRecordModel(user_id=user_id,
-                                             bus_id=bus_id,
+                                             boarding_bus_id=bus_id,
                                              destination_stop_id=destination_stop_id))
 
     async def get_by_user(self, user_id: int):

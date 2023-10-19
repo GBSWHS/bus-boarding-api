@@ -41,29 +41,29 @@ class BusDAO:
         if bus:
             await self.session.delete(bus)
 
-    async def get_all(self, limit=50) -> List[BusModel]:
-        query = select(BusModel).limit(limit)
+    async def get_all(self, limit: int, offset: int) -> List[BusModel]:
+        query = select(BusModel).limit(limit).offset(offset)
         result = await self.session.execute(query)
         return list(result.scalars().fetchall())
 
     async def get(self,
                   bus_id: int,
-                  eager_load_stops: bool = False,
-                  eager_load_boarding_infos: bool = False,
-                  eager_load_boarding_records: bool = False) -> List[BusModel]:
-        query = select(BusModel).where(BusModel.id == bus_id)
+                  load_stops: bool = False,
+                  load_boarding_infos: bool = False,
+                  load_boarding_records: bool = False) -> BusModel:
+        stmt = select(BusModel).where(BusModel.id == bus_id)
 
-        if eager_load_stops:
-            query = query.options(joinedload(BusModel.stops))
+        if load_stops:
+            stmt = stmt.options(joinedload(BusModel.stops))
 
-        if eager_load_boarding_infos:
-            query = query.options(joinedload(BusModel.boarding_infos))
+        if load_boarding_infos:
+            stmt = stmt.options(joinedload(BusModel.boarding_infos))
 
-        if eager_load_boarding_records:
-            query = query.options(joinedload(BusModel.boarding_records))
+        if load_boarding_records:
+            stmt = stmt.options(joinedload(BusModel.boarding_records))
 
-        result = await self.session.execute(query)
-        return list(result.scalars().fetchall())
+        result = await self.session.execute(stmt.limit(1))
+        return result.scalar_one_or_none()
 
     async def filter_by_destination(self, destination: Optional[str] = None) -> List[BusModel]:
         query = select(BusModel)

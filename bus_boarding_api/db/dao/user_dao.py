@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from fastapi import Depends
 from sqlalchemy import select, and_
@@ -13,8 +12,17 @@ class UserDAO:
     def __init__(self, session: AsyncSession = Depends(get_db_session)):
         self.session = session
 
-    async def create(self, student_id: str, name: str, phone_number: str, year: int) -> None:
-        self.session.add(UserModel(student_id=student_id, name=name, phone_number=phone_number, year=year))
+    async def create_super_user(self) -> None:
+        self.session.add(UserModel(student_id='_', name='_', phone_number='_', year=2000, role='ADMINISTRATOR'))
+
+    async def create(self, student_id: str, name: str, phone_number: str, year: int, bus_id: int, stop_id: int) -> None:
+        user = UserModel(
+            student_id=student_id,
+            name=name,
+            phone_number=phone_number,
+            year=year,
+        )
+        self.session.add(user)
 
     # async def update_student_id(self, user_id: int,
     #                  student_id: Optional[str] = None,
@@ -47,7 +55,7 @@ class UserDAO:
         if user:
             await self.session.delete(user)
 
-    async def get(self, user_id: int) -> None:
+    async def get(self, user_id: int) -> UserModel:
         stmt = (
             select(UserModel)
             .where(UserModel.id == user_id)
@@ -55,7 +63,7 @@ class UserDAO:
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_by_infos(self, student_id: str, name: str, phone_number: str):
+    async def get_by_infos(self, student_id: str, name: str, phone_number: str) -> UserModel:
         stmt = (
             select(UserModel)
             .where(and_(

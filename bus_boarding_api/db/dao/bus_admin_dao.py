@@ -17,6 +17,14 @@ class BusAdminDAO:
         self.session.add(
             BusAdminModel(user_id=user_id, bus_id=bus_id))
 
+    async def get(self, user_id):
+        stmt = (
+            select(BusAdminModel)
+            .where(BusAdminModel.user_id == user_id)
+        )
+        result = await self.session.execute(stmt.limit(1))
+        return result.scalar_one_or_none()
+
     async def get_all(self, bus_id) -> List[UserModel]:
         stmt = (
             select(UserModel)
