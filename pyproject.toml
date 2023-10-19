@@ -29,6 +29,7 @@ sentry-sdk = "^1.27.1"
 loguru = "^0.7.0"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+pyotp = "^2.9.0"
 
 
 [tool.poetry.dev-dependencies]
