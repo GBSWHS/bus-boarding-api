@@ -17,9 +17,5 @@ class BusStop(ModelPermissions):
     pass
 
 
-class BoardingInfo(ModelPermissions):
-    pass
-
-
 class BoardingRecord(ModelPermissions):
     pass

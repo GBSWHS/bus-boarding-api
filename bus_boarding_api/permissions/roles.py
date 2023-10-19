@@ -42,12 +42,6 @@ ROLE_PERMISSIONS = {
             BusStop.permissions.DELETE
         ],
         [
-            BoardingInfo.permissions.CREATE,
-            BoardingInfo.permissions.READ,
-            BoardingInfo.permissions.UPDATE,
-            BoardingInfo.permissions.DELETE
-        ],
-        [
             BoardingRecord.permissions.CREATE,
             BoardingRecord.permissions.READ,
             BoardingRecord.permissions.UPDATE,
