@@ -40,7 +40,7 @@ class Settings(BaseSettings):
 
     log_level: LogLevel = LogLevel.INFO
     # Variables for the database
-    db_host: str = "localhost"
+    db_host: str = "bus_boarding_api-db"
     db_port: int = 3306
     db_user: str = "bus_boarding_api"
     db_pass: str = "bus_boarding_api"
@@ -57,6 +57,11 @@ class Settings(BaseSettings):
     # Sentry's configuration.
     sentry_dsn: Optional[str] = None
     sentry_sample_rate: float = 1.0
+
+    # Variables for the authentication
+    auth_secret: str = "secret"
+    auth_algorithm: str = "HS256"
+    auth_expire_hours: int = 1
 
     @property
     def db_url(self) -> URL:
