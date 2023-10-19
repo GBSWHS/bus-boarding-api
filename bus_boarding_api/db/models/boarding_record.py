@@ -1,6 +1,5 @@
-from datetime import datetime
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import DateTime
 
@@ -12,9 +11,11 @@ class BoardingRecordModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    boarding_bus_id: Mapped[int] = mapped_column(ForeignKey("bus.id"))
     destination_stop_id: Mapped[int] = mapped_column(ForeignKey("bus_stop.id"))
-    boarding_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
+    boarding_bus_id: Mapped[int] = mapped_column(ForeignKey("bus.id"))
+
+    user: Mapped["UserModel"] = relationship(single_parent=True, cascade="all, delete-orphan")
+    destination_stop: Mapped["BusStopModel"] = relationship(single_parent=True, cascade="all, delete-orphan")
+    boarding_bus: Mapped["BusModel"] = relationship(single_parent=True, cascade="all, delete-orphan")
 
     time_created: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True, onupdate=func.now())
