@@ -23,7 +23,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def create_access_token(data: str):
-    to_encode = {"sub": data}
+    to_encode = {"id": data}
     expire = datetime.utcnow() + timedelta(hours=settings.auth_expire_hours)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.auth_secret, algorithm=settings.auth_algorithm)
@@ -33,11 +33,13 @@ def create_access_token(data: str):
 def get_token_payload(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, settings.auth_secret, algorithms=[settings.auth_algorithm])
-        payload_sub: str = payload.get("sub")
+        payload_sub: str = payload.get("id")
+
         if payload_sub is None:
             raise BearAuthException("Token could not be validated")
         return payload_sub
-    except JWTError:
+    except JWTError as e:
+        print(e)
         raise BearAuthException("Token could not be validated")
 
 
