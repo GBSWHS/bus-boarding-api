@@ -51,21 +51,6 @@ ROLE_PERMISSIONS = {
 
     Role.BUS_ADMIN: [
         [
-            Bus.permissions.CREATE,
-            Bus.permissions.READ,
-            Bus.permissions.UPDATE
-        ],
-        [
-            BusStop.permissions.CREATE,
-            BusStop.permissions.READ,
-            BusStop.permissions.UPDATE
-        ],
-        [
-            BoardingInfo.permissions.CREATE,
-            BoardingInfo.permissions.READ,
-            BoardingInfo.permissions.UPDATE
-        ],
-        [
             BoardingRecord.permissions.CREATE,
             BoardingRecord.permissions.READ,
             BoardingRecord.permissions.UPDATE
