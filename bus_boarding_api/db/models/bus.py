@@ -18,9 +18,9 @@ class BusModel(Base):
     destination: Mapped[str] = mapped_column(String(length=255), nullable=False, default="")
     description: Mapped[str] = mapped_column(String(length=500), nullable=False, default="")
 
-    stops: Mapped[List["BusStopModel"]] = relationship()
-    boarding_infos: Mapped[List["BoardingInfoModel"]] = relationship()
-    boarding_records: Mapped[List["BoardingRecordModel"]] = relationship()
+    stops: Mapped[List["BusStopModel"]] = relationship(cascade="all, delete-orphan")
+    boarding_infos: Mapped[List["BoardingInfoModel"]] = relationship(cascade="all, delete-orphan")
+    boarding_records: Mapped[List["BoardingRecordModel"]] = relationship(cascade="all, delete-orphan")
 
     time_created: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), onupdate=func.now())
+    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True, onupdate=func.now())

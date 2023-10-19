@@ -12,9 +12,9 @@ class BoardingRecordModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    bus_id: Mapped[int] = mapped_column(ForeignKey("bus.id"))
+    boarding_bus_id: Mapped[int] = mapped_column(ForeignKey("bus.id"))
     destination_stop_id: Mapped[int] = mapped_column(ForeignKey("bus_stop.id"))
     boarding_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
 
     time_created: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), onupdate=func.now())
+    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True, onupdate=func.now())

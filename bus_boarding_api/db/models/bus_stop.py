@@ -15,4 +15,4 @@ class BusStopModel(Base):
     name: Mapped[str] = mapped_column(String(length=255), nullable=False)
 
     time_created: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), onupdate=func.now())
+    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True, onupdate=func.now())

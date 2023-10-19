@@ -15,8 +15,8 @@ class BusAdminModel(Base):
     bus_id: Mapped[int] = mapped_column(ForeignKey('bus.id'), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
 
-    bus: Mapped[List["BusModel"]] = relationship()
-    user: Mapped[List["UserModel"]] = relationship()
+    bus: Mapped[List["BusModel"]] = relationship(cascade="all, delete-orphan")
+    user: Mapped[List["UserModel"]] = relationship(cascade="all, delete-orphan")
 
     time_created: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), onupdate=func.now())
+    time_updated: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True, onupdate=func.now())
