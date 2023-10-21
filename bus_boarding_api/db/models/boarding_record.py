@@ -14,7 +14,7 @@ class BoardingRecordModel(Base):
     destination_stop_id: Mapped[int] = mapped_column(ForeignKey("bus_stop.id"))
     boarding_bus_id: Mapped[int] = mapped_column(ForeignKey("bus.id"))
 
-    user: Mapped["UserModel"] = relationship(single_parent=True, cascade="all, delete-orphan")
+    user: Mapped["UserModel"] = relationship(viewonly=True, single_parent=True, cascade="all, delete-orphan")
     destination_stop: Mapped["BusStopModel"] = relationship(single_parent=True, cascade="all, delete-orphan")
     boarding_bus: Mapped["BusModel"] = relationship(single_parent=True, cascade="all, delete-orphan")
 
