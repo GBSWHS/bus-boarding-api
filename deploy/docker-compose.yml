@@ -13,8 +13,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
       BUS_BOARDING_API_HOST: 0.0.0.0
       BUS_BOARDING_API_DB_HOST: bus_boarding_api-db
@@ -25,9 +23,11 @@ services:
       BUS_BOARDING_API_REDIS_HOST: bus_boarding_api-redis
 
   db:
-    image: bitnami/mysql:8.0.30
+    image: bitnami/mysql:latest
     hostname: bus_boarding_api-db
     restart: always
+    ports:
+      - "3307:3306"
     environment:
       MYSQL_ROOT_USER: "bus_boarding_api"
       MYSQL_ROOT_PASSWORD: "bus_boarding_api"
@@ -54,19 +54,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-  redis:
-    image: bitnami/redis:6.2.5
-    hostname: "bus_boarding_api-redis"
-    restart: always
-    environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
-    healthcheck:
-      test: redis-cli ping
-      interval: 1s
-      timeout: 3s
-      retries: 50
-
 
 
 volumes:

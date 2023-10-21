@@ -3,7 +3,6 @@ from typing import Awaitable, Callable
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from bus_boarding_api.services.redis.lifetime import init_redis, shutdown_redis
 from bus_boarding_api.settings import settings
 
 
@@ -43,7 +42,6 @@ def register_startup_event(
     async def _startup() -> None:  # noqa: WPS430
         app.middleware_stack = None
         _setup_db(app)
-        init_redis(app)
         app.middleware_stack = app.build_middleware_stack()
         pass  # noqa: WPS420
 
@@ -64,7 +62,6 @@ def register_shutdown_event(
     async def _shutdown() -> None:  # noqa: WPS430
         await app.state.db_engine.dispose()
 
-        await shutdown_redis(app)
         pass  # noqa: WPS420
 
     return _shutdown
