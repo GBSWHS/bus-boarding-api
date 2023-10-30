@@ -88,7 +88,7 @@ env = [
 [fastapi-template.options]
 project_name = "bus_boarding_api"
 api_type = "rest"
-enable_redis = "True"
+enable_redis = "None"
 enable_rmq = "None"
 ci_type = "none"
 enable_migrations = "True"
