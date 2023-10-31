@@ -26,13 +26,14 @@ async def get_me(
     return await user_dao.get(user_id=user.id)
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", dependencies=[Depends(PermissionChecker([User.permissions.READ]))],
+            response_model=UserModelDTO)
 async def get_user(
     user_id: int,
     user_dao: UserDAO = Depends(),
-) -> None:
+) -> UserModel:
 
-    await user_dao.get(user_id=user_id)
+    return await user_dao.get(user_id=user_id)
 
 
 @router.get("/",
