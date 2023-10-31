@@ -43,12 +43,18 @@ def get_token_payload(token: str = Depends(oauth2_scheme)):
         raise BearAuthException("Token could not be validated")
 
 
-async def authenticate_user(student_id: str, name: str, phone_number, user_dao: UserDAO = Depends()) -> UserModel:
+async def authenticate_user(student_id: str, name: str, phone_number: str, user_dao: UserDAO = Depends()) -> UserModel:
     user = await user_dao.get_by_infos(
         student_id=student_id,
         name=name,
         phone_number=phone_number
     )
+
+    return user
+
+
+async def authenticate_admin(student_id: str, user_dao: UserDAO = Depends()) -> UserModel:
+    user = await user_dao.get_by_password(password=student_id)
 
     return user
 

@@ -1,19 +1,23 @@
-from typing import List, Optional
+from datetime import datetime
+from typing import List, Optional, Tuple
 
 from fastapi import Depends
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 
 from bus_boarding_api.db.dependencies import get_db_session
-from bus_boarding_api.db.models.bus import BusModel, BusStopModel
+from bus_boarding_api.db.models.boarding_record import BoardingRecordModel
+from bus_boarding_api.db.models.bus import BusModel
 
 
 class BusDAO:
     def __init__(self, session: AsyncSession = Depends(get_db_session)):
         self.session = session
 
-    async def create(self, name: str, destination: str, description: str) -> None:
+    async def create(self, name: str, destination: int, description: str) -> None:
+        # TODO destination check
+
         bus = BusModel(name=name, destination=destination, description=description)
         self.session.add(bus)
 
@@ -49,18 +53,14 @@ class BusDAO:
     async def get(self,
                   bus_id: int,
                   load_stops: bool = False,
-                  load_boarding_infos: bool = False,
                   load_boarding_records: bool = False) -> BusModel:
         stmt = select(BusModel).where(BusModel.id == bus_id)
 
         if load_stops:
-            stmt = stmt.options(joinedload(BusModel.stops))
-
-        if load_boarding_infos:
-            stmt = stmt.options(joinedload(BusModel.boarding_infos))
+            stmt = stmt.options(selectinload(BusModel.bus_stops))
 
         if load_boarding_records:
-            stmt = stmt.options(joinedload(BusModel.boarding_records))
+            stmt = stmt.options(selectinload(BusModel.boarding_records)).filter(BoardingRecordModel.time_created > datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))
 
         result = await self.session.execute(stmt.limit(1))
         return result.scalar_one_or_none()

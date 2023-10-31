@@ -1,14 +1,15 @@
+from typing import List
+
 from pydantic import BaseModel, ConfigDict
 
 from bus_boarding_api.web.api.bus_stop.schema import BusStopModelDTO
-from bus_boarding_api.web.api.boarding_info.schema import BoardingInfoModelDTO
 from bus_boarding_api.web.api.boarding_record.schema import BoardingRecordModelDTO
 
 
 class BusModelDTO(BaseModel):
     id: int
     name: str
-    destination: str
+    destination: int
     description: str
 
     model_config = ConfigDict(from_attributes=True)
@@ -17,34 +18,22 @@ class BusModelDTO(BaseModel):
 class BusModelWithAllDTO(BaseModel):
     id: int
     name: str
-    destination: str
+    destination: int
     description: str
 
-    bus_stop: BusStopModelDTO
-    boarding_infos: BoardingInfoModelDTO
-    boarding_records: BoardingRecordModelDTO
+    bus_stops: List[BusStopModelDTO]
+    boarding_records: List[BoardingRecordModelDTO]
 
-    model_config = ConfigDict(from_attributes=True)
+    # model_config = ConfigDict(from_attributes=True)
 
 
 class BusModelWithStopsDTO(BaseModel):
     id: int
     name: str
-    destination: str
+    destination: int
     description: str
 
     bus_stop: BusStopModelDTO
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class BusModelWithInfosDTO(BaseModel):
-    id: int
-    name: str
-    destination: str
-    description: str
-
-    boarding_infos: BoardingInfoModelDTO
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -52,7 +41,7 @@ class BusModelWithInfosDTO(BaseModel):
 class BusModelWithRecordsDTO(BaseModel):
     id: int
     name: str
-    destination: str
+    destination: int
     description: str
 
     boarding_records: BoardingRecordModelDTO
@@ -62,5 +51,5 @@ class BusModelWithRecordsDTO(BaseModel):
 
 class BusModelInputDTO(BaseModel):
     name: str
-    destination: str
+    destination: int
     description: str

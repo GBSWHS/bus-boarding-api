@@ -1,18 +1,28 @@
-from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, HTTPException
 from fastapi.param_functions import Depends
 
-from bus_boarding_api.authentication import authenticate_user, create_access_token
+from bus_boarding_api.authentication import (authenticate_user, authenticate_admin,
+                                             create_access_token, get_current_user)
 from bus_boarding_api.db.dao.user_dao import UserDAO
 from bus_boarding_api.db.models.user import UserModel
 from bus_boarding_api.authentication import PermissionChecker
-from bus_boarding_api.permissions.models_permissions import User, BoardingInfo
+from bus_boarding_api.permissions.models_permissions import User
 from bus_boarding_api.web.api.user.schema import (UserModelDTO, UserModelInputDTO,
                                                   TokenDTO, AuthenticateInputDTO)
 
 router = APIRouter()
+
+
+@router.get("/me", dependencies=[Depends(PermissionChecker([]))],
+            response_model=UserModelDTO)
+async def get_me(
+    user: UserModel = Depends(get_current_user),
+    user_dao: UserDAO = Depends(),
+) -> UserModel:
+
+    return await user_dao.get(user_id=user.id)
 
 
 @router.get("/{user_id}")
@@ -28,16 +38,15 @@ async def get_user(
             dependencies=[Depends(PermissionChecker([User.permissions.READ]))],
             response_model=List[UserModelDTO])
 async def get_users(
-    year: int = datetime.now().year,
-    limit: int = 50,
+    limit: int = 1000,
     offset: int = 0,
     user_dao: UserDAO = Depends(),
 ) -> List[UserModel]:
 
-    return await user_dao.get_all(year=year, limit=limit, offset=offset)
+    return await user_dao.get_all(limit=limit, offset=offset)
 
 
-@router.post("/", dependencies=[Depends(PermissionChecker([User.permissions.CREATE, BoardingInfo.permissions.CREATE]))],)
+@router.post("/", dependencies=[Depends(PermissionChecker([User.permissions.CREATE]))],)
 async def create_user(
     new_user: UserModelInputDTO,
     user_dao: UserDAO = Depends(),
@@ -47,7 +56,6 @@ async def create_user(
         student_id=new_user.student_id,
         name=new_user.name,
         phone_number=new_user.phone_number,
-        year=new_user.year,
         bus_id=new_user.boarding_bus_id,
         stop_id=new_user.destination_stop_id,
     )
@@ -72,10 +80,13 @@ async def login(form_data: AuthenticateInputDTO, user_dao: UserDAO = Depends()):
         user_dao=user_dao
     )
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid info")
+        raise HTTPException(status_code=401, detail="일치하지 않는 정보입니다")
 
     access_token = create_access_token(data=user.id)
+    await user_dao.update_totp_secret(user_id=user.id, totp_secret=base32_string)
+
     return {
         "access_token": access_token,
-        "token_type": "bearer"
+        "totp_secret": base32_string,
+        "type": user.role,
     }

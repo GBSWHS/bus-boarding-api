@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import Depends
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bus_boarding_api.db.dependencies import get_db_session
@@ -17,10 +17,13 @@ class BusAdminDAO:
         self.session.add(
             BusAdminModel(user_id=user_id, bus_id=bus_id))
 
-    async def get(self, user_id):
+    async def get(self, user_id: int, bus_id: int) -> BusAdminModel | None:
         stmt = (
             select(BusAdminModel)
-            .where(BusAdminModel.user_id == user_id)
+            .where(and_(
+                BusAdminModel.user_id == user_id,
+                BusAdminModel.bus_id == bus_id
+            ))
         )
         result = await self.session.execute(stmt.limit(1))
         return result.scalar_one_or_none()
