@@ -2,11 +2,7 @@ version: '3.9'
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: ./deploy/Dockerfile
-      target: prod
-    image: bus_boarding_api:${BUS_BOARDING_API_VERSION:-latest}
+    image: ghcr.io/gbswhs/bus_boarding_api:latest
     restart: always
     ports:
       - 8000:8000
