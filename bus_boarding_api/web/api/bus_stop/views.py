@@ -18,7 +18,7 @@ async def get_bus_stops(bus_stop_dao: BusStopDAO = Depends()) -> List[BusStopMod
 
 
 @router.get("/{bus_stop_id}", dependencies=[Depends(PermissionChecker([BusStop.permissions.READ]))], response_model=BusStopModelDTO)
-async def get_bus_by_id(bus_stop_id: int, bus_stop_dao: BusStopDAO = Depends()) -> BusStopModel:
+async def get_bus_stops_by_id(bus_stop_id: int, bus_stop_dao: BusStopDAO = Depends()) -> BusStopModel:
     return await bus_stop_dao.get(bus_stop_id)
 
 
