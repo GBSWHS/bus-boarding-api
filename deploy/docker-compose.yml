@@ -8,11 +8,12 @@ services:
       target: prod
     image: bus_boarding_api:${BUS_BOARDING_API_VERSION:-latest}
     restart: always
+    ports:
+      - 8000:8000
+    networks:
+      - bus_boarding
     env_file:
     - .env
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
       BUS_BOARDING_API_HOST: 0.0.0.0
       BUS_BOARDING_API_DB_HOST: bus_boarding_api-db
@@ -23,38 +24,52 @@ services:
       BUS_BOARDING_API_REDIS_HOST: bus_boarding_api-redis
 
   db:
-    image: bitnami/mysql:latest
+    image: mariadb:latest
     hostname: bus_boarding_api-db
     restart: always
-    ports:
-      - "3307:3306"
+    expose:
+      - 3306
+    networks:
+      - bus_boarding
     environment:
-      MYSQL_ROOT_USER: "bus_boarding_api"
-      MYSQL_ROOT_PASSWORD: "bus_boarding_api"
-      MYSQL_DATABASE: "bus_boarding_api"
-      MYSQL_AUTHENTICATION_PLUGIN: "caching_sha2_password"
-    healthcheck:
-      test: mysqladmin ping -h localhost
-      interval: 10s
-      timeout: 5s
-      retries: 40
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_USER: "bus_boarding_api"
+      MARIADB_PASSWORD: "bus_boarding_api"
+      MARIADB_DATABASE: "bus_boarding_api"
     volumes:
-    - bus_boarding_api-db-data:/bitnami/mysql/data
+    - bus_boarding_api-db-data:/var/lib/mysql
 
   migrator:
     image: bus_boarding_api:${BUS_BOARDING_API_VERSION:-latest}
-    restart: "no"
     command: alembic upgrade head
+    networks:
+      - bus_boarding
     environment:
       BUS_BOARDING_API_DB_HOST: bus_boarding_api-db
       BUS_BOARDING_API_DB_PORT: 3306
       BUS_BOARDING_API_DB_USER: bus_boarding_api
       BUS_BOARDING_API_DB_PASS: bus_boarding_api
       BUS_BOARDING_API_DB_BASE: bus_boarding_api
-    depends_on:
-      db:
-        condition: service_healthy
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 10
+        window: 120s
 
+  adminer:
+      image: adminer
+      restart: always
+      ports:
+          - 8080:8080
+      networks:
+          - bus_boarding
+      depends_on:
+          - db
+
+
+networks:
+  bus_boarding:
 
 volumes:
   bus_boarding_api-db-data:
