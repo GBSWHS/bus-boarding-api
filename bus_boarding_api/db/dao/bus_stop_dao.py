@@ -14,9 +14,7 @@ class BusStopDAO:
         self.session = session
 
     async def get(self, bus_stop_id: int) -> BusStopModel | None:
-        bus_stop = self.session.get(BusStopModel, bus_stop_id)
-        if bus_stop is not None:
-            return None
+        bus_stop = await self.session.get(BusStopModel, bus_stop_id)
 
         return bus_stop
 
