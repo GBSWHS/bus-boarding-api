@@ -13,6 +13,13 @@ class BusStopDAO:
     def __init__(self, session: AsyncSession = Depends(get_db_session)):
         self.session = session
 
+    async def get(self, bus_stop_id: int) -> BusStopModel | None:
+        bus_stop = self.session.get(BusStopModel, bus_stop_id)
+        if bus_stop is not None:
+            return None
+
+        return bus_stop
+
     async def create(self, bus_id: int, order: int, name: str) -> None:
         bus = self.session.get(BusModel, bus_id)
         if bus:

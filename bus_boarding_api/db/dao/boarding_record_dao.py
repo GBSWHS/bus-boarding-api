@@ -1,6 +1,7 @@
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from bus_boarding_api.db.dependencies import get_db_session
 from bus_boarding_api.db.models.boarding_record import BoardingRecordModel
@@ -29,6 +30,14 @@ class BoardingRecordDAO:
         self.session.add(BoardingRecordModel(user_id=user_id,
                                              boarding_bus_id=bus_id,
                                              destination_stop_id=destination_stop_id))
+
+    async def get_all(self):
+        stmt = select(BoardingRecordModel)
+        stmt = stmt.options(joinedload(BoardingRecordModel.user))
+        stmt = stmt.options(joinedload(BoardingRecordModel.destination_stop))
+        stmt = stmt.options(joinedload(BoardingRecordModel.boarding_bus))
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
 
     async def get_by_user(self, user_id: int):
         stmt = (

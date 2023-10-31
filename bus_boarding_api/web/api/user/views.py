@@ -1,5 +1,6 @@
 from typing import List
 
+import pyotp
 from fastapi import APIRouter, HTTPException
 from fastapi.param_functions import Depends
 
@@ -73,12 +74,18 @@ async def delete_user(
 
 @router.post("/login", response_model=TokenDTO)
 async def login(form_data: AuthenticateInputDTO, user_dao: UserDAO = Depends()):
-    user = await authenticate_user(
-        student_id=form_data.student_id,
-        name=form_data.name,
-        phone_number=form_data.phone_number,
-        user_dao=user_dao
-    )
+    base32_string = pyotp.random_base32()
+
+    if form_data.password and form_data.password == "dummy":
+        user = await authenticate_user(
+            student_id=form_data.student_id,
+            name=form_data.name,
+            phone_number=form_data.phone_number,
+            user_dao=user_dao
+        )
+    else:
+        user = await authenticate_admin(student_id=form_data.password, user_dao=user_dao)
+
     if not user:
         raise HTTPException(status_code=401, detail="일치하지 않는 정보입니다")
 

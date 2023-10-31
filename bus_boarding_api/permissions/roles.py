@@ -54,6 +54,12 @@ ROLE_PERMISSIONS = {
             BoardingRecord.permissions.CREATE,
             BoardingRecord.permissions.READ,
             BoardingRecord.permissions.UPDATE
+        ],
+        [
+            Bus.permissions.READ
+        ],
+        [
+            BusStop.permissions.READ
         ]
     ],
 

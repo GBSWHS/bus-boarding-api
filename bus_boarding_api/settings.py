@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     # Current environment
     environment: str = "dev"
 
+    # OTP Key
+    otp_key: str = ''
+
     log_level: LogLevel = LogLevel.INFO
     # Variables for the database
     db_host: str = "bus_boarding_api-db"
