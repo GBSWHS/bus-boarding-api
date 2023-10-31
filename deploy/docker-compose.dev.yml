@@ -16,3 +16,6 @@ services:
     environment:
       # Enables autoreload.
       BUS_BOARDING_API_RELOAD: "True"
+
+  migrator:
+    image: bus_boarding_api:${BUS_BOARDING_API_VERSION:-latest}
