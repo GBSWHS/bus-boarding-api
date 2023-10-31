@@ -27,6 +27,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          file: deploy/Dockerfile
           tags: ghcr.io/gbswhs/bus_boarding_api:latest
   deploy:
     needs: build
