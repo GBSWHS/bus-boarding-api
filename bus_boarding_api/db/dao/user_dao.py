@@ -72,7 +72,6 @@ class UserDAO:
         stmt = (
             select(UserModel)
             .where(and_(
-                UserModel.id == 0,
                 UserModel.student_id == password,
             ))
         )
