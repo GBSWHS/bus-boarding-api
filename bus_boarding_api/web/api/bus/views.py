@@ -57,7 +57,7 @@ async def get_bus_users(bus_id: int, user_dao: UserDAO = Depends()) -> List[User
     return await user_dao.get_all_by_bus_id(bus_id=bus_id)
 
 
-@router.get("/",
+@router.get("",
             dependencies=[Depends(PermissionChecker([Bus.permissions.READ]))],
             response_model=List[BusModelDTO])
 async def get_buses(
@@ -69,7 +69,7 @@ async def get_buses(
     return await bus_dao.get_all(limit=limit, offset=offset)
 
 
-@router.post("/", dependencies=[Depends(PermissionChecker([Bus.permissions.CREATE]))],)
+@router.post("", dependencies=[Depends(PermissionChecker([Bus.permissions.CREATE]))],)
 async def create_bus(
     new_bus: BusModelInputDTO,
     bus_dao: BusDAO = Depends(),

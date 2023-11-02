@@ -33,7 +33,7 @@ async def get_user(
     return await user_dao.get(user_id=user_id)
 
 
-@router.get("/",
+@router.get("",
             dependencies=[Depends(PermissionChecker([User.permissions.READ]))],
             response_model=List[UserModelDTO])
 async def get_users(
@@ -45,7 +45,7 @@ async def get_users(
     return await user_dao.get_all(limit=limit, offset=offset)
 
 
-@router.post("/", dependencies=[Depends(PermissionChecker([User.permissions.CREATE]))],)
+@router.post("", dependencies=[Depends(PermissionChecker([User.permissions.CREATE]))],)
 async def create_user(
     new_user: UserModelInputDTO,
     user_dao: UserDAO = Depends(),

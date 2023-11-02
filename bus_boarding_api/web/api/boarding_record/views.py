@@ -17,14 +17,14 @@ from bus_boarding_api.web.api.boarding_record.schema import BoardingRecordInputD
 router = APIRouter()
 
 
-@router.get("/", dependencies=[Depends(PermissionChecker([User.permissions.READ, Bus.permissions.READ, BusStop.permissions.READ, BoardingRecord.permissions.READ]))])
+@router.get("", dependencies=[Depends(PermissionChecker([User.permissions.READ, Bus.permissions.READ, BusStop.permissions.READ, BoardingRecord.permissions.READ]))])
 async def get_all_boarding_records(
     boarding_record_dao: BoardingRecordDAO = Depends(),
 ):
     return await boarding_record_dao.get_all()
 
 
-@router.post("/", dependencies=[Depends(PermissionChecker([
+@router.post("", dependencies=[Depends(PermissionChecker([
     BoardingRecord.permissions.CREATE,
 ]))])
 async def create_boarding_record(

@@ -5,7 +5,7 @@ from bus_boarding_api.web.api.echo.schema import Message
 router = APIRouter()
 
 
-@router.post("/", response_model=Message)
+@router.post("", response_model=Message)
 async def send_echo_message(
     incoming_message: Message,
 ) -> Message:
