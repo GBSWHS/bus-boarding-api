@@ -35,16 +35,3 @@ class UserModelInputDTO(BaseModel):
     phone_number: str
     boarding_bus_id: int
     destination_stop_id: int
-
-
-class AuthenticateInputDTO(BaseModel):
-    student_id: str | None
-    name: str | None
-    phone_number: str | None
-    password: str | None
-
-
-class TokenDTO(BaseModel):
-    access_token: str
-    totp_secret: str
-    type: str

@@ -19,7 +19,7 @@ class BearAuthException(Exception):
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/swagger")
 
 
 def create_access_token(data: str):
