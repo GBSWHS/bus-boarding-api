@@ -60,6 +60,9 @@ ROLE_PERMISSIONS = {
         ],
         [
             BusStop.permissions.READ
+        ],
+        [
+            User.permissions.READ
         ]
     ],
 
