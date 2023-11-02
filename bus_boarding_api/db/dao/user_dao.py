@@ -85,7 +85,8 @@ class UserDAO:
             .where(and_(
                 UserModel.student_id == student_id,
                 UserModel.name == name,
-                UserModel.phone_number == phone_number
+                UserModel.phone_number == phone_number,
+                UserModel.role != 'ADMINISTRATOR'
             ))
         )
         result = await self.session.execute(stmt.limit(1))
