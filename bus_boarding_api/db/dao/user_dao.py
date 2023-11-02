@@ -99,6 +99,14 @@ class UserDAO:
         result = await self.session.execute(stmt.limit(limit).offset(offset))
         return list(result.scalars().fetchall())
 
+    async def get_all_by_bus_id(self, bus_id: int) -> List[UserModel]:
+        stmt = (
+            select(UserModel)
+            .where(UserModel.boarding_bus_id == bus_id)
+        )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().fetchall())
+
     async def filter_by_name(self, name: str, limit: int, offset: int) -> List[UserModel]:
         stmt = (
             select(UserModel)
