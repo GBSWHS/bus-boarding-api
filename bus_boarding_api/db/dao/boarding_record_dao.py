@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import List
+
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,6 +33,15 @@ class BoardingRecordDAO:
         self.session.add(BoardingRecordModel(user_id=user_id,
                                              boarding_bus_id=bus_id,
                                              destination_stop_id=destination_stop_id))
+
+    async def get_today_record_by_bus_id(self, bus_id: int) -> List[BoardingRecordModel]:
+        stmt = (
+            select(BoardingRecordModel)
+            .where(BoardingRecordModel.boarding_bus_id == bus_id)
+            .where(BoardingRecordModel.time_created >= datetime.now().date())
+        )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
 
     async def get_all(self):
         stmt = select(BoardingRecordModel)
