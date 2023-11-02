@@ -52,7 +52,9 @@ async def get_bus(bus_id: int, bus_dao: BusDAO = Depends()) -> BusModel:
 @router.get("/{bus_id}/records",
             dependencies=[Depends(PermissionChecker([Bus.permissions.READ, BoardingRecord.permissions.READ]))],
             response_model=List[BoardingRecordModelDTO])
-async def get_bus_records(bus_id: int, boarding_record_dao: BoardingRecordDAO = Depends()) -> List[BoardingRecordModel]:
+async def get_bus_records(
+    bus_id: int, boarding_record_dao: BoardingRecordDAO = Depends()
+) -> List[BoardingRecordModel]:
     return await boarding_record_dao.get_today_record_by_bus_id(
         bus_id=bus_id,
     )
@@ -62,17 +64,17 @@ async def get_bus_records(bus_id: int, boarding_record_dao: BoardingRecordDAO = 
             dependencies=[Depends(PermissionChecker(
                 [Bus.permissions.READ, User.permissions.READ]))],
             response_model=List[UserModelDTO])
-async def get_bus_users(bus_id: int, user_dao: UserDAO = Depends()) -> List[UserModel]:
-    return await user_dao.get_all_by_bus_id(bus_id=bus_id)
+async def get_bus_users(
+    bus_id: int, limit: int = 1000, offset: int = 0, user_dao: UserDAO = Depends(),
+) -> List[UserModel]:
+    return await user_dao.get_all_by_bus_id(bus_id=bus_id, limit=limit, offset=offset)
 
 
 @router.get("",
             dependencies=[Depends(PermissionChecker([Bus.permissions.READ]))],
             response_model=List[BusModelDTO])
 async def get_buses(
-    limit: int = 1000,
-    offset: int = 0,
-    bus_dao: BusDAO = Depends(),
+    limit: int = 1000, offset: int = 0, bus_dao: BusDAO = Depends(),
 ) -> List[BusModel]:
 
     return await bus_dao.get_all(limit=limit, offset=offset)
@@ -80,8 +82,7 @@ async def get_buses(
 
 @router.post("", dependencies=[Depends(PermissionChecker([Bus.permissions.CREATE]))],)
 async def create_bus(
-    new_bus: BusModelInputDTO,
-    bus_dao: BusDAO = Depends(),
+    new_bus: BusModelInputDTO, bus_dao: BusDAO = Depends(),
 ) -> None:
 
     await bus_dao.create(
@@ -94,8 +95,7 @@ async def create_bus(
 @router.delete("/{bus_id}",
                dependencies=[Depends(PermissionChecker([Bus.permissions.DELETE]))])
 async def delete_bus(
-    bus_id: int,
-    bus_dao: BusDAO = Depends(),
+    bus_id: int, bus_dao: BusDAO = Depends(),
 ) -> None:
 
     await bus_dao.delete(bus_id=bus_id)
