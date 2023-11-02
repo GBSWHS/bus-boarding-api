@@ -73,6 +73,7 @@ class UserDAO:
             select(UserModel)
             .where(and_(
                 UserModel.student_id == password,
+                UserModel.role == 'ADMINISTRATOR'
             ))
         )
         result = await self.session.execute(stmt.limit(1))
