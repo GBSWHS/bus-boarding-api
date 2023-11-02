@@ -3,11 +3,15 @@ from typing import List
 from fastapi import APIRouter
 from fastapi.param_functions import Depends
 
+from bus_boarding_api.db.dao.boarding_record_dao import BoardingRecordDAO
 from bus_boarding_api.db.dao.bus_dao import BusDAO
+from bus_boarding_api.db.dao.user_dao import UserDAO
+from bus_boarding_api.db.models.boarding_record import BoardingRecordModel
 from bus_boarding_api.db.models.bus import BusModel
+from bus_boarding_api.db.models.user import UserModel
 from bus_boarding_api.web.api.bus.schema import BusModelDTO, BusModelInputDTO, BusModelWithAllDTO, BusModelWithStopsDTO, BusModelWithRecordsDTO
 from bus_boarding_api.authentication import PermissionChecker
-from bus_boarding_api.permissions.models_permissions import Bus, BusStop, BoardingRecord
+from bus_boarding_api.permissions.models_permissions import User, Bus, BusStop, BoardingRecord
 
 router = APIRouter()
 
@@ -39,11 +43,18 @@ async def get_bus_stops(bus_id: int, bus_dao: BusDAO = Depends()) -> BusModel:
 @router.get("/{bus_id}/records",
             dependencies=[Depends(PermissionChecker([Bus.permissions.READ, BoardingRecord.permissions.READ]))],
             response_model=BusModelWithRecordsDTO)
-async def get_bus_records(bus_id: int, bus_dao: BusDAO = Depends()) -> BusModel:
-    return await bus_dao.get(
+async def get_bus_records(bus_id: int, boarding_record_dao: BoardingRecordDAO = Depends()) -> List[BoardingRecordModel]:
+    return await boarding_record_dao.get_today_record_by_bus_id(
         bus_id=bus_id,
-        load_boarding_records=True,
     )
+
+
+@router.get("/{bus_id}/users",
+            dependencies=[Depends(PermissionChecker(
+                [Bus.permissions.READ, User.permissions.READ]))],
+            response_model=BusModelWithRecordsDTO)
+async def get_bus_users(bus_id: int, user_dao: UserDAO = Depends()) -> List[UserModel]:
+    return await user_dao.get_all_by_bus_id(bus_id=bus_id)
 
 
 @router.get("/",
