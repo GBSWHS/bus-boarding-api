@@ -41,15 +41,18 @@ class BoardingRecordDAO:
             .where(BoardingRecordModel.time_created >= datetime.now().date())
         )
         result = await self.session.execute(stmt)
-        return list(result.scalars().all())
+        return list(result.scalars().fetchall())
 
-    async def get_all(self):
-        stmt = select(BoardingRecordModel)
+    async def get_all_today_records(self) -> List[BoardingRecordModel]:
+        stmt = (
+            select(BoardingRecordModel)
+            .where(BoardingRecordModel.time_created >= datetime.now().date())
+        )
         stmt = stmt.options(joinedload(BoardingRecordModel.user))
         stmt = stmt.options(joinedload(BoardingRecordModel.destination_stop))
         stmt = stmt.options(joinedload(BoardingRecordModel.boarding_bus))
         result = await self.session.execute(stmt)
-        return result.scalars().all()
+        return list(result.scalars().fetchall())
 
     async def get_by_user(self, user_id: int):
         stmt = (

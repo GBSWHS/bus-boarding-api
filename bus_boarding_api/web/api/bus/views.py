@@ -10,7 +10,8 @@ from bus_boarding_api.db.models.boarding_record import BoardingRecordModel
 from bus_boarding_api.db.models.bus import BusModel
 from bus_boarding_api.db.models.user import UserModel
 from bus_boarding_api.web.api.bus.schema import (BusModelDTO, BusModelInputDTO,
-                                                 UserModelDTO, BoardingRecordModelDTO)
+                                                 BoardingRecordModelDTO,
+                                                 JoinedUserModelDTO)
 from bus_boarding_api.authentication import PermissionChecker
 from bus_boarding_api.permissions.models_permissions import User, Bus, BusStop, BoardingRecord
 
@@ -63,7 +64,7 @@ async def get_bus_records(
 @router.get("/{bus_id}/users",
             dependencies=[Depends(PermissionChecker(
                 [Bus.permissions.READ, User.permissions.READ]))],
-            response_model=List[UserModelDTO])
+            response_model=List[JoinedUserModelDTO])
 async def get_bus_users(
     bus_id: int, limit: int = 1000, offset: int = 0, user_dao: UserDAO = Depends(),
 ) -> List[UserModel]:

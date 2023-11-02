@@ -58,6 +58,23 @@ class BusModelInputDTO(BaseModel):
     description: str
 
 
+class JoinedUserModelDTO(BaseModel):
+    class BusStopModelDTO(BaseModel):
+        id: int
+        name: str
+        location: str
+
+    id: int
+    student_id: str
+    name: str
+    phone_number: str
+
+    boarding_bus: BusModelDTO
+    destination_stop: BusStopModelDTO
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class UserModelDTO(BaseModel):
     id: int
     student_id: str

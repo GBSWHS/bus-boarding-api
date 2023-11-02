@@ -108,6 +108,8 @@ class UserDAO:
                 UserModel.role != 'ADMINISTRATOR',
             ))
         )
+        stmt = stmt.options(joinedload(UserModel.boarding_bus))
+        stmt = stmt.options(joinedload(UserModel.destination_stop))
         result = await self.session.execute(stmt.limit(limit).offset(offset))
         return list(result.scalars().fetchall())
 
