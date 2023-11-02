@@ -13,7 +13,7 @@ from bus_boarding_api.web.api.user.schema import UserModelDTO, UserModelInputDTO
 router = APIRouter()
 
 
-@router.get("/me", dependencies=[Depends(PermissionChecker([User.permissions.READ]))],
+@router.get("/me", dependencies=[Depends(PermissionChecker([]))],
             response_model=UserModelDTO)
 async def get_me(
     user: UserModel = Depends(get_current_user),
