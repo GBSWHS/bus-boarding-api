@@ -103,7 +103,10 @@ class UserDAO:
     async def get_all_by_bus_id(self, bus_id: int) -> List[UserModel]:
         stmt = (
             select(UserModel)
-            .where(UserModel.boarding_bus_id == bus_id)
+            .where(and_(
+                UserModel.boarding_bus_id == bus_id,
+                UserModel.role != 'ADMINISTRATOR',
+            ))
         )
         result = await self.session.execute(stmt)
         return list(result.scalars().fetchall())
