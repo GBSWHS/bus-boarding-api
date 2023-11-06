@@ -2,6 +2,10 @@ version: '3.9'
 
 services:
   api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
     image: ghcr.io/gbswhs/bus_boarding_api:latest
     restart: always
     ports:
@@ -14,24 +18,23 @@ services:
       BUS_BOARDING_API_HOST: 0.0.0.0
       BUS_BOARDING_API_DB_HOST: bus_boarding_api-db
       BUS_BOARDING_API_DB_PORT: 3306
-      BUS_BOARDING_API_DB_USER: bus_boarding_api
-      BUS_BOARDING_API_DB_PASS: bus_boarding_api
-      BUS_BOARDING_API_DB_BASE: bus_boarding_api
-      BUS_BOARDING_API_REDIS_HOST: bus_boarding_api-redis
+    depends_on:
+      db:
+        condition: service_started
 
   db:
-    image: mariadb:latest
+    image: mariadb:10.11
     hostname: bus_boarding_api-db
     restart: always
     expose:
       - 3306
     networks:
       - bus_boarding
+    command: --max_allowed_packet=32505856
+    env_file:
+      - .env
     environment:
       MARIADB_RANDOM_ROOT_PASSWORD: "yes"
-      MARIADB_USER: "bus_boarding_api"
-      MARIADB_PASSWORD: "bus_boarding_api"
-      MARIADB_DATABASE: "bus_boarding_api"
     volumes:
     - bus_boarding_api-db-data:/var/lib/mysql
 
@@ -41,18 +44,11 @@ services:
     command: alembic upgrade head
     networks:
       - bus_boarding
-    environment:
-      BUS_BOARDING_API_DB_HOST: bus_boarding_api-db
-      BUS_BOARDING_API_DB_PORT: 3306
-      BUS_BOARDING_API_DB_USER: bus_boarding_api
-      BUS_BOARDING_API_DB_PASS: bus_boarding_api
-      BUS_BOARDING_API_DB_BASE: bus_boarding_api
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 10
-        window: 120s
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_started
 
   adminer:
       image: adminer
@@ -62,7 +58,8 @@ services:
       networks:
           - bus_boarding
       depends_on:
-          - db
+        db:
+          condition: service_started
 
 
 networks:
