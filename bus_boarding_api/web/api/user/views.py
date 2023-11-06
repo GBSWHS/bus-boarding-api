@@ -5,6 +5,7 @@ from fastapi.param_functions import Depends
 
 from bus_boarding_api.authentication import get_current_user
 from bus_boarding_api.db.dao.user_dao import UserDAO
+from bus_boarding_api.db.models.boarding_record import BoardingRecordModel
 from bus_boarding_api.db.models.user import UserModel
 from bus_boarding_api.authentication import PermissionChecker
 from bus_boarding_api.permissions.models_permissions import User
@@ -21,6 +22,17 @@ async def get_me(
 ) -> UserModel:
 
     return await user_dao.get(user_id=user.id)
+
+
+@router.get("/me/records", dependencies=[Depends(PermissionChecker([]))],
+            response_model=List[UserModelDTO])
+async def get_me_records(
+    limit: int = 10,
+    user: UserModel = Depends(get_current_user),
+    user_dao: UserDAO = Depends(),
+) -> List[BoardingRecordModel]:
+
+    return await user_dao.get_all_records(user_id=user.id, limit=limit)
 
 
 @router.get("/{user_id}", dependencies=[Depends(PermissionChecker([User.permissions.READ]))],

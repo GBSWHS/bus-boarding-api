@@ -30,7 +30,8 @@ router = APIRouter()
 async def get_all_boarding_records(
     boarding_record_dao: BoardingRecordDAO = Depends(),
 ):
-    return await boarding_record_dao.get_all_today_records()
+    pass
+    # return await boarding_record_dao.get_all_today_records()
 
 
 @router.post(
@@ -56,6 +57,7 @@ async def create_boarding_record_bypassing_otp(
         user_id=user.id,
         bus_id=user.boarding_bus_id,
         destination_stop_id=user.destination_stop_id,
+        verified=False,
     )
 
     return user
@@ -95,6 +97,7 @@ async def create_boarding_record(
         user_id=user.id,
         bus_id=user.boarding_bus_id,
         destination_stop_id=user.destination_stop_id,
+        verified=True,
     )
 
     return user
