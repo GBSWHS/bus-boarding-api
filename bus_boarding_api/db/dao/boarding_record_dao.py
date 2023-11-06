@@ -17,7 +17,7 @@ class BoardingRecordDAO:
     def __init__(self, session: AsyncSession = Depends(get_db_session)):
         self.session = session
 
-    async def create(self, user_id: int, bus_id: int, destination_stop_id: int) -> None:
+    async def create(self, user_id: int, bus_id: int, destination_stop_id: int, verified: bool) -> None:
         user_result = await self.session.execute(select(UserModel.id).where(UserModel.id == user_id))
         if not user_result.scalar_one_or_none():
             raise ValueError(f"User with ID {user_id} does not exist.")
@@ -30,9 +30,14 @@ class BoardingRecordDAO:
         if not stop_result.scalar_one_or_none():
             raise ValueError(f"Stop with ID {destination_stop_id} does not exist.")
 
-        self.session.add(BoardingRecordModel(user_id=user_id,
-                                             boarding_bus_id=bus_id,
-                                             destination_stop_id=destination_stop_id))
+        self.session.add(
+            BoardingRecordModel(
+                user_id=user_id,
+                boarding_bus_id=bus_id,
+                destination_stop_id=destination_stop_id,
+                verified=verified
+            )
+        )
 
     async def get_today_record_by_bus_id(self, bus_id: int) -> List[BoardingRecordModel]:
         stmt = (
