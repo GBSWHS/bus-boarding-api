@@ -8,6 +8,7 @@ class BoardingRecordModelDTO(BaseModel):
     user_id: int
     boarding_bus_id: int
     destination_stop_id: int
+    verified: bool
     time_created: datetime
 
 
