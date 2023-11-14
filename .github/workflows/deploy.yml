@@ -44,3 +44,4 @@ jobs:
             cd /home/ec2-user
             docker compose pull
             docker compose up -d
+            docker image prune -f
