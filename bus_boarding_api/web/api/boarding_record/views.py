@@ -30,8 +30,7 @@ router = APIRouter()
 async def get_all_boarding_records(
     boarding_record_dao: BoardingRecordDAO = Depends(),
 ):
-    pass
-    # return await boarding_record_dao.get_all_today_records()
+    return await boarding_record_dao.get_all_today_records()
 
 
 @router.post(
