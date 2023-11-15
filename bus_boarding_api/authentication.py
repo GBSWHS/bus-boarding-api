@@ -51,7 +51,6 @@ async def authenticate_user(student_id: str, name: str, phone_number: str, user_
         name=name,
         phone_number=phone_number
     )
-    user.totp_created_at = datetime.utcnow()
 
     return user
 
