@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import select, insert, and_
+from sqlalchemy import select, insert, and_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -47,10 +47,12 @@ class UserDAO:
         self.session.add(user)
 
     async def update_totp_secret(self, user_id: int, totp_secret: str) -> None:
-        user = await self.session.get(UserModel, user_id)
-        if user:
-            user.totp_secret = totp_secret
-            user.totp_created_at = datetime.now()
+        stmt = (
+            update(UserModel)
+            .where(UserModel.id == user_id)
+            .values(totp_secret=totp_secret, totp_created_at=datetime.now())
+        )
+        await self.session.execute(stmt)
 
     async def delete(self, user_id: int) -> None:
         user = self.session.get(UserModel, user_id)
