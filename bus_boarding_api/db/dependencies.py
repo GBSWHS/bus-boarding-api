@@ -13,10 +13,7 @@ async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]
     try:  # noqa: WPS501
         print('session created', rand)
         yield session
-    except Exception as e:
-        # logger.error(f"An error occurred: {e}")
-        print(e)
-        print('session error', rand)
+    except Exception:
         await session.rollback()
         raise
     finally:
