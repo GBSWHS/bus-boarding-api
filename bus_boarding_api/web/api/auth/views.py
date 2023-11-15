@@ -1,10 +1,12 @@
 import pyotp
 from fastapi import APIRouter, HTTPException, Form
-from fastapi.param_functions import Depends
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from bus_boarding_api.authentication import (authenticate_user, authenticate_admin,
                                              create_access_token)
 from bus_boarding_api.db.dao.user_dao import UserDAO
+from bus_boarding_api.db.dependencies import get_db_session
 from bus_boarding_api.web.api.auth.schema import (TokenDTO, UserAuthInputDTO,
                                                   AdminAuthInputDTO)
 
@@ -24,7 +26,9 @@ async def generate_token_and_response(user, user_dao):
 
 
 @router.post("/user", response_model=TokenDTO)
-async def login_user(form_data: UserAuthInputDTO, user_dao: UserDAO = Depends()):
+async def login_user(form_data: UserAuthInputDTO, db: AsyncSession = Depends(get_db_session)):
+    user_dao = UserDAO(db)
+
     user = await authenticate_user(
         student_id=form_data.student_id,
         name=form_data.name,
@@ -39,7 +43,9 @@ async def login_user(form_data: UserAuthInputDTO, user_dao: UserDAO = Depends())
 
 
 @router.post("/admin", response_model=TokenDTO)
-async def login_admin(form_data: AdminAuthInputDTO, user_dao: UserDAO = Depends()):
+async def login_admin(form_data: AdminAuthInputDTO, db: AsyncSession = Depends(get_db_session)):
+    user_dao = UserDAO(db)
+
     user = await authenticate_admin(student_id=form_data.password, user_dao=user_dao)
 
     if not user:
@@ -49,7 +55,9 @@ async def login_admin(form_data: AdminAuthInputDTO, user_dao: UserDAO = Depends(
 
 
 @router.post("/swagger", response_model=TokenDTO)
-async def login_swagger(password: str = Form(...), user_dao: UserDAO = Depends()):
+async def login_swagger(password: str = Form(...), db: AsyncSession = Depends(get_db_session)):
+    user_dao = UserDAO(db)
+
     user = await authenticate_admin(student_id=password, user_dao=user_dao)
 
     if not user:

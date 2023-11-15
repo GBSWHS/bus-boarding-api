@@ -5,7 +5,9 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from bus_boarding_api.db.dependencies import get_db_session
 from bus_boarding_api.permissions.base import ModelPermission
 from bus_boarding_api.permissions.roles import get_role_permissions
 from bus_boarding_api.settings import settings
@@ -59,7 +61,7 @@ async def authenticate_admin(student_id: str, user_dao: UserDAO = Depends()) -> 
     return user
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), user_dao: UserDAO = Depends()):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db_session)):
     try:
         user_id = get_token_payload(token)
     except BearAuthException:
@@ -69,6 +71,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), user_dao: UserDA
             headers={"WWW-Authenticate": "Bearer"}
         )
 
+    user_dao = UserDAO(db)
     user = await user_dao.get(user_id=(int(user_id)))
     if not user:
         raise HTTPException(

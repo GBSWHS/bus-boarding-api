@@ -14,7 +14,7 @@ from bus_boarding_api.db.models.bus_stop import BusStopModel
 
 
 class BoardingRecordDAO:
-    def __init__(self, session: AsyncSession = Depends(get_db_session)):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
     async def create(self, user_id: int, bus_id: int, destination_stop_id: int, verified: bool) -> None:

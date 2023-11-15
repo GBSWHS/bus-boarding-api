@@ -6,7 +6,7 @@ from bus_boarding_api.db.models.bus_route import BusRouteModel
 
 
 class BusRouteDAO:
-    def __init__(self, session: AsyncSession = Depends(get_db_session)):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
     async def create(self, name: str, bus_id: str, stop_id: str) -> None:

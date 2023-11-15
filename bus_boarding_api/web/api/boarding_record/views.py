@@ -3,12 +3,14 @@ from datetime import datetime
 
 import pyotp
 from fastapi import APIRouter, HTTPException
-from fastapi.param_functions import Depends
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from bus_boarding_api.authentication import PermissionChecker, get_current_user
 from bus_boarding_api.db.dao.boarding_record_dao import BoardingRecordDAO
 from bus_boarding_api.db.dao.bus_admin_dao import BusAdminDAO
 from bus_boarding_api.db.dao.user_dao import UserDAO
+from bus_boarding_api.db.dependencies import get_db_session
 from bus_boarding_api.db.models.user import UserModel
 from bus_boarding_api.permissions.models_permissions import (BusStop, BoardingRecord,
                                                              User, Bus)
@@ -28,9 +30,12 @@ router = APIRouter()
     ]))],
     response_model=JoinedUserModelDTO)
 async def get_all_boarding_records(
-    boarding_record_dao: BoardingRecordDAO = Depends(),
+    db: AsyncSession = Depends(get_db_session),
 ):
-    return await boarding_record_dao.get_all_today_records()
+    boarding_record_dao = BoardingRecordDAO(db)
+    pass
+    # TODO add response model suitable to this
+    # return await boarding_record_dao.get_all_today_records()
 
 
 @router.post(
@@ -39,11 +44,13 @@ async def get_all_boarding_records(
     response_model=UserModelDTO)
 async def create_boarding_record_bypassing_otp(
     new_boarding_record: BoardingRecordBypassInputDTO,
-    user_dao: UserDAO = Depends(),
-    bus_admin_dao: BusAdminDAO = Depends(),
-    boarding_record_dao: BoardingRecordDAO = Depends(),
+    db: AsyncSession = Depends(get_db_session),
     current_user: UserModel = Depends(get_current_user),
 ) -> UserModel:
+    user_dao = UserDAO(db)
+    bus_admin_dao = BusAdminDAO(db)
+    boarding_record_dao = BoardingRecordDAO(db)
+
     user = await user_dao.get(new_boarding_record.user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="존재하지 않는 사용자 입니다.")
@@ -68,11 +75,13 @@ async def create_boarding_record_bypassing_otp(
     response_model=UserModelDTO)
 async def create_boarding_record(
     new_boarding_record: BoardingRecordInputDTO,
-    user_dao: UserDAO = Depends(),
-    bus_admin_dao: BusAdminDAO = Depends(),
-    boarding_record_dao: BoardingRecordDAO = Depends(),
+    db: AsyncSession = Depends(get_db_session),
     current_user: UserModel = Depends(get_current_user),
 ) -> UserModel:
+    user_dao = UserDAO(db)
+    bus_admin_dao = BusAdminDAO(db)
+    boarding_record_dao = BoardingRecordDAO(db)
+
     decoded_user_otp = base64.b64decode(new_boarding_record.user_otp).decode('ascii')
     otp, user_id = decoded_user_otp.split(';')
     if otp is None or user_id is None:
