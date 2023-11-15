@@ -11,11 +11,11 @@ async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]
     rand = random.randint(10000000, 99999999)
 
     try:  # noqa: WPS501
-        print('session created v2', rand)
+        print('session created v3', rand)
         yield session
     except Exception:
         await session.rollback()
         raise
     finally:
-        print('session finally v2', rand)
+        print('session finally v3', rand)
         await session.close()
