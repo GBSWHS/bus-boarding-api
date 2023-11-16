@@ -13,10 +13,14 @@ class BusStopDAO:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get(self, bus_stop_id: int) -> BusStopModel | None:
-        bus_stop = await self.session.get(BusStopModel, bus_stop_id)
+    async def get(self, bus_stop_id: int) -> BusStopModel:
+        stmt = (
+            select(BusStopModel)
+            .where(BusStopModel.id == bus_stop_id)
+        )
+        result = await self.session.execute(stmt)
 
-        return bus_stop
+        return result.scalar_one_or_none()
 
     async def create(self, bus_id: int, order: int, name: str) -> None:
         bus = self.session.get(BusModel, bus_id)

@@ -4,8 +4,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./deploy/Dockerfile
-      target: dev
+      dockerfile: ./deploy/Dockerfile.dev
     image: bus_boarding_api:${BUS_BOARDING_API_VERSION:-latest}
     ports:
       # Exposes application port.

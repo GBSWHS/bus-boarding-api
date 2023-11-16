@@ -17,7 +17,7 @@ class BusAdminDAO:
         self.session.add(
             BusAdminModel(user_id=user_id, bus_id=bus_id))
 
-    async def get(self, user_id: int, bus_id: int) -> BusAdminModel | None:
+    async def get(self, user_id: int, bus_id: int) -> BusAdminModel:
         stmt = (
             select(BusAdminModel)
             .where(and_(

@@ -1,33 +1,22 @@
-FROM python:3.11.4-slim-bullseye as prod
-RUN apt-get update && apt-get install -y \
-  default-libmysqlclient-dev \
-  gcc \
-  pkg-config \
-  && rm -rf /var/lib/apt/lists/*
-
+FROM python:3.9 as dependencies
 
 RUN pip install poetry==1.4.2
 
-# Configuring poetry
-RUN poetry config virtualenvs.create false
+COPY . /app/
 
-# Copying requirements of a project
-COPY pyproject.toml poetry.lock /app/src/
-WORKDIR /app/src
+WORKDIR /app
 
-# Installing requirements
-RUN poetry install --only main
-# Removing gcc
-RUN apt-get purge -y \
-  gcc \
-  && rm -rf /var/lib/apt/lists/*
+RUN python -m poetry config virtualenvs.create false
+RUN python -m poetry install --only main --no-cache
 
-# Copying actuall application
-COPY . /app/src/
-RUN poetry install --only main
 
-CMD ["/usr/local/bin/python", "-m", "bus_boarding_api"]
+FROM gcr.io/distroless/python3
 
-FROM prod as dev
+COPY --from=dependencies /usr/local/lib/python3.9/ /usr/local/lib/python3.9/
 
-RUN poetry install
+COPY . /app/
+WORKDIR /app
+
+ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
+
+ENTRYPOINT ["python", "-m", "bus_boarding_api"]

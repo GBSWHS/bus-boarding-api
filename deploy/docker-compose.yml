@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: ./deploy/Dockerfile
-      target: prod
     image: ghcr.io/gbswhs/bus_boarding_api:latest
     restart: always
     ports:
@@ -39,9 +38,12 @@ services:
     - bus_boarding_api-db-data:/var/lib/mysql
 
   migrator:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
     image: ghcr.io/gbswhs/bus_boarding_api:latest
     restart: "no"
-    command: alembic upgrade head
+    entrypoint: python3 -m alembic upgrade head
     networks:
       - bus_boarding
     env_file:
