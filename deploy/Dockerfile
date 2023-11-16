@@ -1,6 +1,4 @@
-FROM alpine
-
-RUN apk add --no-cache python3 py3-pip
+FROM python:3.11-alpine3.16
 
 RUN pip3 install poetry==1.4.2
 
