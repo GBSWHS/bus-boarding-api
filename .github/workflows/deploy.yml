@@ -41,7 +41,7 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            cd /home/ec2-user
+            cd /home/ubuntu
             docker compose pull
             docker compose up -d
             docker image prune -f
